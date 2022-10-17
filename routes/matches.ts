@@ -20,6 +20,30 @@ matchRouter.post('/new', async (req, res) => {
         res.status(500).send({ error: err })
     }
 })
+
+matchRouter.post('/:id/event', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const eventToInsert = req.body as Event;
+        // trigger live event for the match
+        pusher.trigger(`cache-${id}`, 'events', eventToInsert);
+        const isGoal = eventToInsert.type === 'GOAL' || eventToInsert.type === 'PENALTY'
+        const updatePayload: any = { events: matchDb.util.append([{ ...eventToInsert }]) }
+        if (isGoal) {
+            const player1 = await playerDb.get(eventToInsert.player1 || '');
+            const player2 = await playerDb.get(eventToInsert.player2 || '')
+            updatePayload.goals = matchDb.util.append([{ player: player1, assist: player2, timeStamp: Date.now(), matchTimeStamp: eventToInsert.matchTimeStamp, team: eventToInsert.team1 }])
+        }
+        await matchDb.update(updatePayload, id)
+        const match = await matchDb.get(id);
+        // emit latest goal updates and match state
+        pusher.trigger(`cache-state-${id}`, 'state', { goals: match?.goals || [], updated: eventToInsert.matchTimeStamp, status: match?.status })
+        res.status(200).send({ match })
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ error: err })
+    }
+})
 matchRouter.get('/', async (req, res) => {
     const query = req.query;
     res.send(await matchDb.fetch(query));
