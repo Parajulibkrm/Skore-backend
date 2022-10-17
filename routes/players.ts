@@ -33,5 +33,13 @@ playerRouter.patch(`/:id`, async (req, res) => {
     }
 })
 
-
+playerRouter.get(`/:id/photo`, async (req, res) => {
+    try {
+        const player = await playerDb.get(req.params.id) as Player | null;
+        player?.photoUrl && res.status(200).redirect(player?.photoUrl)
+    } catch (e) {
+        console.log(e)
+        res.status(404).send(null)
+    }
+})
 export default playerRouter;
