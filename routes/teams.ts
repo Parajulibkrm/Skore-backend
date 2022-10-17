@@ -32,5 +32,13 @@ teamRouter.patch(`/:id`, async (req, res) => {
         res.status(500).send(e)
     }
 })
-
+teamRouter.get(`/:id/photo`, async (req, res) => {
+    try {
+        const player = await teamDb.get(req.params.id) as Team | null;
+        player?.logo && res.status(200).redirect(player?.logo)
+    } catch (e) {
+        console.log(e)
+        res.status(404).send(null)
+    }
+})
 export default teamRouter;
