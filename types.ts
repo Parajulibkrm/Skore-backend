@@ -7,32 +7,32 @@
 //     - Teams - players, title, logo
 //     - Events - type, player1, player2, timestamp
 export interface Player {
-    id?: string;
+    key?: string;
     name: string;
     photoUrl?: string;
 }
 
 export interface Team {
-    id?: string;
+    key?: string;
     name: string;
     logo?: string;
 }
 export interface Tournament {
-    id?: string;
+    key?: string;
     title: string;
-    matches: [string];
+    logo: string;
 }
 export interface Match {
-    id?: string;
+    key?: string;
     title: string;
     tournament?: string;
     desc: string;
     venue: string;
     time: number;
     status: 'SCHEDULED' | 'STARTED' | 'CANCELED' | 'POSTPONED' | 'PAUSED' | 'ENDED';
-    events: [string];
-    teams: [string];
-    goals: [{ player: string, assist: string, timeStamp: number, matchTimeStamp: number, team: string }]
+    events: string[];
+    teams: string[];
+    goals: [{ player: Player, assist: Player, timeStamp: number, matchTimeStamp: number, team: string }]
 }
 export interface Event {
     type: string;
