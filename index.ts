@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import Pusher from 'pusher'
 
 import * as dotenv from 'dotenv'
-// import router from './routes/routes'
+import router from './routes/routes'
 dotenv.config()
 const app = express()
 
@@ -33,7 +33,7 @@ app.use((_, res, next) => {
 app.get('/', (_, res) => {
     res.send({ 'test': 'success' })
 });
-// app.use(router)
+app.use(router)
 app.listen(PORT, () => {
     console.log('Node app is running on PORT', PORT)
 })
