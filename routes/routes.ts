@@ -2,7 +2,7 @@ import express from "express";
 import matchRouter from "./matches";
 import playerRouter from "./players";
 import teamRouter from "./teams";
-import tournamentRouter from "./tournament";
+import tournamentRouter from "./tournaments";
 const router = express.Router();
 
 router.use('/tournament', tournamentRouter);

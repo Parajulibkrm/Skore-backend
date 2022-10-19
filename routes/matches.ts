@@ -13,7 +13,9 @@ matchRouter.post('/new', async (req, res) => {
             return res.status(400).send({ error: { message: 'Please enter Valid teams for the match' } })
         }
         const tournament = matchToInsert.tournament ? await tournamentDb.get(matchToInsert.tournament) : null
-        const added = await matchDb.insert({ ...matchToInsert, teams: teams, tournament })
+        const payload = { ...matchToInsert, teams, tournament }
+        // @ts-ignore
+        const added = await matchDb.insert({ ...payload })
         res.send(added)
     } catch (err) {
         console.log(err)
@@ -39,6 +41,17 @@ matchRouter.post('/:id/event', async (req, res) => {
         // emit latest goal updates and match state
         pusher.trigger(`cache-state-${id}`, 'state', { goals: match?.goals || [], updated: eventToInsert.matchTimeStamp, status: match?.status })
         res.status(200).send({ match })
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ error: err })
+    }
+})
+
+matchRouter.delete('/:id/event', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await matchDb.update({ goals: [], events: [] }, id)
+        res.status(200).send({ success: true })
     } catch (err) {
         console.log(err)
         res.status(500).send({ error: err })
